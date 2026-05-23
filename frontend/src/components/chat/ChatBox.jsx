@@ -28,6 +28,11 @@ const ChatBox = ({
 
   // 🔥 FETCH OLD MESSAGES
   useEffect(() => {
+    if (bookingId) {
+      socket.emit(
+        "join-room",
+        bookingId
+      );}
     fetchMessages();
   }, [bookingId]);
 
@@ -49,14 +54,24 @@ const ChatBox = ({
     socket.on(
       "receive-message",
       (message) => {
-        if (
-          message.booking ===
-          bookingId
-        ) {
-          setMessages((prev) => [
-            ...prev,
-            message,
-          ]);
+        setMessages((prev) => {
+  const exists = prev.find(
+    (m) => m._id === message._id
+  );
+
+  if (exists) return prev;
+
+  return [...prev, message];
+}); {
+          setMessages((prev) => {
+  const exists = prev.some(
+    (m) => m._id === message._id
+  );
+
+  if (exists) return prev;
+
+  return [...prev, message];
+}); 
         }
       }
     );

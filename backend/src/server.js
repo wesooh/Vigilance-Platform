@@ -34,17 +34,22 @@ const onlineWorkers = new Map();
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("send-message", (message) => {
-    io.emit("receive-message", message);
+  // JOIN ROOM
+  socket.on("join-room", (bookingId) => {
+    socket.join(bookingId);
+    console.log(`Joined room: ${bookingId}`);
   });
 
-  // worker joins room
-  socket.on("worker-online", (workerId) => {
-    onlineWorkers.set(workerId, socket.id);
+  // SEND MESSAGE TO ROOM ONLY
+  socket.on("send-message", (message) => {
+    io.to(message.booking).emit(
+      "receive-message",
+      message
+    );
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    console.log("User disconnected");
   });
 });
 
