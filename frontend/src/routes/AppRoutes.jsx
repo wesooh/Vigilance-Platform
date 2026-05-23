@@ -21,6 +21,8 @@ import PublicRoute from "./PublicRoute";
 
 import EditProfile from "../pages/worker/EditProfile";
 
+import WorkerBookings from "../pages/worker/WorkerBookings";
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
@@ -124,7 +126,16 @@ const AppRoutes = () => {
     </ProtectedRoute>
   }
 />
-
+        <Route
+  path="/worker/bookings"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout>
+        <WorkerBookings />
+      </DashboardLayout>
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   );

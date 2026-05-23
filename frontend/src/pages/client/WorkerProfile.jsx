@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 const WorkerProfile = () => {
   const { id } = useParams();
+  const { user } = useAuth();
 
   const [worker, setWorker] = useState(null);
 
@@ -28,6 +30,31 @@ const WorkerProfile = () => {
     return <h2>Loading...</h2>;
   }
 
+ const hireWorker = async () => {
+  if (!user) {
+    alert("Login required");
+    return;
+  }
+
+  try {
+    await axios.post(
+      "http://localhost:5000/api/bookings",
+      {
+        client: user._id,
+        worker: worker._id,
+        serviceType: worker.category,
+        message: "I would like to hire you",
+      }
+    );
+
+    alert("Booking Sent Successfully");
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+    
   return (
     <div style={styles.container}>
 
@@ -108,9 +135,12 @@ const WorkerProfile = () => {
       </section>
 
       {/* HIRE BUTTON */}
-      <button style={styles.button}>
-        Hire Worker
-      </button>
+      <button
+  style={styles.button}
+  onClick={hireWorker}
+>
+  Hire Worker
+</button>
 
     </div>
   );

@@ -61,6 +61,10 @@ const Sidebar = () => {
       name: "Edit Profile",
       path: "/worker/edit-profile",
     },
+    {
+      name: "My Bookings",
+      path: "/worker/bookings",
+    },
   ];
 
   const adminLinks = [
