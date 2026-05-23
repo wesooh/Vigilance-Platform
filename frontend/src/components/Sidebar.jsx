@@ -57,6 +57,10 @@ const Sidebar = () => {
       name: "Settings",
       path: "/worker/settings"
     },
+    {
+      name: "Edit Profile",
+      path: "/worker/edit-profile",
+    },
   ];
 
   const adminLinks = [

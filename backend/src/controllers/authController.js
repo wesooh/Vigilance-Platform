@@ -118,3 +118,83 @@ export const getWorkers = async (req, res) => {
     });
   }
 };
+
+export const getWorkerById = async (req, res) => {
+  try {
+    const worker = await User.findById(
+      req.params.id,
+      {
+        password: 0,
+      }
+    );
+
+    if (!worker) {
+      return res.status(404).json({
+        message: "Worker not found",
+      });
+    }
+
+    res.json(worker);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const updateWorkerProfile = async (req, res) => {
+  try {
+    const worker = await User.findById(req.params.id);
+
+    if (!worker) {
+      return res.status(404).json({
+        message: "Worker not found",
+      });
+    }
+
+    // UPDATE FIELDS
+    worker.about =
+      req.body.about || worker.about;
+
+    worker.experience =
+      req.body.experience ||
+      worker.experience;
+
+    worker.category =
+      req.body.category ||
+      worker.category;
+
+    worker.skills =
+      req.body.skills || worker.skills;
+
+    worker.availability =
+      req.body.availability ??
+      worker.availability;
+
+    // PRICE
+    worker.price = {
+      daily:
+        req.body.price?.daily ??
+        worker.price.daily,
+
+      weekly:
+        req.body.price?.weekly ??
+        worker.price.weekly,
+
+      monthly:
+        req.body.price?.monthly ??
+        worker.price.monthly,
+    };
+
+    const updatedWorker =
+      await worker.save();
+
+    res.json(updatedWorker);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

@@ -46,6 +46,56 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    profileImage: {
+  type: String,
+  default: "",
+},
+
+about: {
+  type: String,
+  default: "",
+},
+
+skills: [String],
+
+experience: {
+  type: String,
+  default: "",
+},
+
+rating: {
+  type: Number,
+  default: 0,
+},
+
+availability: {
+  type: Boolean,
+  default: true,
+},
+
+price: {
+  daily: {
+    type: Number,
+    default: 0,
+  },
+
+  weekly: {
+    type: Number,
+    default: 0,
+  },
+
+  monthly: {
+    type: Number,
+    default: 0,
+  },
+},
+
+testimonials: [
+  {
+    clientName: String,
+    comment: String,
+  },
+],  
   },
   { timestamps: true }
 );

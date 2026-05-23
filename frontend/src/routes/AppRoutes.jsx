@@ -19,6 +19,8 @@ import FindWorkers from "../pages/client/FindWorkers";
 
 import PublicRoute from "./PublicRoute";
 
+import EditProfile from "../pages/worker/EditProfile";
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
@@ -111,6 +113,17 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />    
+
+        <Route
+  path="/worker/edit-profile"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout>
+        <EditProfile />
+      </DashboardLayout>
+    </ProtectedRoute>
+  }
+/>
 
       </Routes>
     </BrowserRouter>
