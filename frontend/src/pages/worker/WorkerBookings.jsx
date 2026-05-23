@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { io } from "socket.io-client";
+import ChatBox from "../../components/chat/ChatBox";
 
 const WorkerBookings = () => {
   const { user } = useAuth();
@@ -100,6 +101,12 @@ const WorkerBookings = () => {
             >
               Reject
             </button>
+
+          <ChatBox
+  bookingId={booking._id}
+  receiverId={booking.client._id}
+/>  
+
           </div>
         ))
       )}

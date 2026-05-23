@@ -14,4 +14,6 @@ router.get(
   getMessages
 );
 
+console.log("CHAT ROUTES LOADED");
+
 export default router;

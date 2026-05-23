@@ -18,7 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-app.use("/api/chats", chatRoutes);
+app.use("/api/chat", chatRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {
