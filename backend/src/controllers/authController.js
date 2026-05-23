@@ -59,8 +59,13 @@ export const login = async (req, res) => {
       user,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  console.log("🔥 FULL LOGIN ERROR:", error);
+  console.log("🔥 STACK:", error.stack);
+
+  return res.status(500).json({
+    message: error.message,
+  });
+}
 };
 
 export const getWorkers = async (req, res) => {
@@ -193,6 +198,7 @@ export const updateWorkerProfile = async (req, res) => {
     res.json(updatedWorker);
 
   } catch (error) {
+    console.log("LOGIN ERROR", error);
     res.status(500).json({
       message: error.message,
     });

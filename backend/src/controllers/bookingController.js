@@ -1,21 +1,20 @@
 import Booking from "../models/Booking.js";
 
-export const createBooking = async (
-  req,
-  res
-) => {
+export const createBooking = async (req, res) => {
   try {
-    const booking =
-      await Booking.create({
-        client: req.body.client,
-        worker: req.body.worker,
-        serviceType:
-          req.body.serviceType,
-        message: req.body.message,
-      });
+    const io = req.app.get("io");
+
+    const booking = await Booking.create({
+      client: req.body.client,
+      worker: req.body.worker,
+      serviceType: req.body.serviceType,
+      message: req.body.message,
+    });
+
+    // 🔥 REAL-TIME EVENT
+    io.emit("new-booking", booking);
 
     res.status(201).json(booking);
-
   } catch (error) {
     res.status(500).json({
       message: error.message,
