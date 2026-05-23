@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import chatRoutes from "./routes/chatRoutes.js";  
 
 dotenv.config();
 
@@ -17,12 +18,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-
+app.use("/api/chats", chatRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
   },
 });
 
@@ -31,6 +33,10 @@ const onlineWorkers = new Map();
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
+
+  socket.on("send-message", (message) => {
+    io.emit("receive-message", message);
+  });
 
   // worker joins room
   socket.on("worker-online", (workerId) => {
