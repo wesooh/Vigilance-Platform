@@ -1,0 +1,21 @@
+:root {
+  --primary-dark: #0B2C59;
+  --primary-green: #268426;
+  --accent-green: #4CA621;
+  --secondary-blue: #16437E;
+  --gray: #7A848D;
+  --light-gray: #D2D7DF;
+  --white: #FFFFFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: var(--light-gray);
+  color: var(--primary-dark);
+}
