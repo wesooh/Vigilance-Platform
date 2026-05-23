@@ -1,4 +1,5 @@
 import Booking from "../models/Booking.js";
+import Notification from "../models/Notification.js"; 
 
 export const createBooking = async (req, res) => {
   try {
@@ -11,9 +12,15 @@ export const createBooking = async (req, res) => {
       message: req.body.message,
     });
 
+    await Notification.create({
+  user: req.body.worker,
+  message: "New booking request received",
+  type: "booking",
+});
+
     // 🔥 REAL-TIME EVENT
     io.emit("new-booking", booking);
-
+    
     res.status(201).json(booking);
   } catch (error) {
     res.status(500).json({
@@ -73,3 +80,15 @@ export const updateBookingStatus =
       });
     }
   };
+
+  export const getNotifications = async (req, res) => {
+  try {
+    const notifications = await Notification.find({
+      user: req.params.userId,
+    }).sort({ createdAt: -1 });
+
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
