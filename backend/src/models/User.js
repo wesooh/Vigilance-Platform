@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema(
       weekly: Number,
       monthly: Number,
     },
+    category: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

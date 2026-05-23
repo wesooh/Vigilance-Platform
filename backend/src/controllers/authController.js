@@ -65,15 +65,56 @@ export const login = async (req, res) => {
 
 export const getWorkers = async (req, res) => {
   try {
-    const workers = await User.find(
-      { role: "worker" },
-      {
-        password: 0, // ❌ never send password
-      }
-    );
+    const {
+      search,
+      category,
+      location,
+    } = req.query;
+
+    let query = {
+      role: "worker",
+    };
+
+    // SEARCH BY NAME
+    if (search) {
+      query.$or = [
+        {
+          firstName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          lastName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ];
+    }
+
+    // FILTER CATEGORY
+    if (category) {
+      query.category = category;
+    }
+
+    // FILTER LOCATION
+    if (location) {
+      query.location = {
+        $regex: location,
+        $options: "i",
+      };
+    }
+
+    const workers = await User.find(query, {
+      password: 0,
+    });
 
     res.json(workers);
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
