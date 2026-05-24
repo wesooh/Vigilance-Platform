@@ -40,3 +40,15 @@ export const createPayment =
       });
     }
   };
+
+  export const getWorkerPayments = async (req, res) => {
+  try {
+    const payments = await Payment.find({
+      worker: req.params.workerId,
+    }).sort({ createdAt: -1 });
+
+    res.json(payments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

@@ -7,6 +7,7 @@ const paymentSchema =
         type:
           mongoose.Schema.Types.ObjectId,
         ref: "Booking",
+        required: false,
       },
 
       client: {
@@ -37,6 +38,17 @@ const paymentSchema =
         ],
         default: "pending",
       },
+
+     status: {
+        type: String,
+        enum: [
+          "pending",
+          "paid",
+          "failed",
+        ],
+        default: "paid",
+      },
+
     },
     { timestamps: true }
   );
