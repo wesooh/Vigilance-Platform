@@ -39,18 +39,18 @@ const WorkerBookings = () => {
   }, [user]);
 
   // 🔥 STATUS UPDATE
-  const updateStatus = async (id, status) => {
-    try {
-      await axios.put(
-        `http://localhost:5000/api/bookings/${id}`,
-        { status }
-      );
+ const updateStatus = async (id, status) => {
+  try {
+    await axios.put(
+      `http://localhost:5000/api/bookings/${id}/status`,
+      { status }
+    );
 
-      fetchBookings();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+    fetchBookings();
+  } catch (err) {
+    console.log(err.response?.data || err.message);
+  }
+};
 
   if (!user) {
     return <h3>Loading user...</h3>;
