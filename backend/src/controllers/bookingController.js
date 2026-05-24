@@ -1,94 +1,92 @@
 import Booking from "../models/Booking.js";
-import Notification from "../models/Notification.js"; 
 
+// CREATE BOOKING
 export const createBooking = async (req, res) => {
   try {
-    const io = req.app.get("io");
+    const booking = await Booking.create(req.body);
 
-    const booking = await Booking.create({
-      client: req.body.client,
-      worker: req.body.worker,
-      serviceType: req.body.serviceType,
-      message: req.body.message,
-    });
+    const populated = await booking.populate([
+      { path: "client", select: "firstName lastName" },
+      { path: "worker", select: "firstName lastName" },
+    ]);
 
-    await Notification.create({
-  user: req.body.worker,
-  message: "New booking request received",
-  type: "booking",
-});
-
-    // 🔥 REAL-TIME EVENT
-    io.emit("new-booking", booking);
-    
-    res.status(201).json(booking);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(201).json(populated);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const getWorkerBookings =
-  async (req, res) => {
-    try {
-      const bookings =
-        await Booking.find({
-          worker: req.params.workerId,
-        })
-          .populate(
-            "client",
-            "firstName lastName"
-          );
-
-      res.json(bookings);
-
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    }
-  };
-
-export const updateBookingStatus =
-  async (req, res) => {
-    try {
-      const booking =
-        await Booking.findById(
-          req.params.id
-        );
-
-      if (!booking) {
-        return res
-          .status(404)
-          .json({
-            message:
-              "Booking not found",
-          });
-      }
-
-      booking.status =
-        req.body.status;
-
-      await booking.save();
-
-      res.json(booking);
-
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    }
-  };
-
-  export const getNotifications = async (req, res) => {
+// GET WORKER BOOKINGS
+export const getWorkerBookings = async (req, res) => {
   try {
-    const notifications = await Notification.find({
-      user: req.params.userId,
-    }).sort({ createdAt: -1 });
+    const bookings = await Booking.find({
+      worker: req.params.workerId,
+    })
+      .populate("client", "firstName lastName")
+      .populate("worker", "firstName lastName")
+      .sort({ createdAt: -1 });
 
-    res.json(notifications);
+    res.json(bookings);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// UPDATE BOOKING STATUS
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "requested",
+      "accepted",
+      "in-progress",
+      "completed",
+      "rejected",
+      "cancelled",
+      "paid",
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    )
+      .populate("client", "firstName lastName")
+      .populate("worker", "firstName lastName");
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.json(booking);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// NOTIFICATIONS (basic version)
+export const getNotifications = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      $or: [
+        { client: req.params.userId },
+        { worker: req.params.userId },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    res.json(bookings);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
 };

@@ -19,7 +19,7 @@ router.get(
 router.get("/notifications/:userId", getNotifications);
 
 router.put(
-  "/:id",
+  "/:id/status",
   updateBookingStatus
 );
 
