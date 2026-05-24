@@ -1,4 +1,5 @@
 import Payment from "../models/Payment.js";
+import Booking from "../models/Booking.js";
 
 export const createPayment =
   async (req, res) => {
@@ -9,6 +10,14 @@ export const createPayment =
         worker,
         totalAmount,
       } = req.body;
+
+      const bookingData = await Booking.findById(booking);
+
+      if (!bookingData || bookingData.status !== "completed") {
+      return res.status(400).json({
+        message: "Payment allowed only after job completion",
+      });
+    }
 
       // 🔥 25% COMMISSION
       const companyCommission =
