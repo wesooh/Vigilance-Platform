@@ -1,5 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -106,12 +107,15 @@ const Sidebar = () => {
 
       <div style={styles.links}>
         {links.map((link, index) => (
-          <div key={index} style={styles.link}>
-            <a href={link.path} style={styles.linkText}>
-              {link.name}
-            </a>
-          </div>
-        ))}
+  <div key={index} style={styles.link}>
+    <Link
+      to={link.path}
+      style={{ color: "white", textDecoration: "none" }}
+    >
+      {link.name}
+    </Link>
+  </div>
+))}
       </div>
 
       <button
@@ -162,6 +166,10 @@ const styles = {
     color: "white",
     cursor: "pointer",
   },
+
+  active: {
+    background: "#268426",
+  }
 };
 
 export default Sidebar;
