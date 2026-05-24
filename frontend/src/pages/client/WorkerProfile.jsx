@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import PaymentModal from "../../components/payments/PaymentModal";
 
 const WorkerProfile = () => {
   const { id } = useParams();
   const { user } = useAuth();
 
   const [worker, setWorker] = useState(null);
+
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     fetchWorker();
@@ -141,6 +144,20 @@ const WorkerProfile = () => {
 >
   Hire Worker
 </button>
+<button onClick={() =>
+  setShowPaymentModal(true)
+  }
+  > Pay Worker
+  </button>
+
+  {showPaymentModal && (
+    <PaymentModal
+      worker={worker}
+      onClose={() =>
+        setShowPaymentModal(false)
+      }
+      />
+  )}
 
     </div>
   );
