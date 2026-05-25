@@ -25,6 +25,7 @@ import WorkerBookings from "../pages/worker/WorkerBookings";
 
 import WorkerEarnings from "../pages/worker/WorkerEarnings";
 
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
@@ -134,6 +135,16 @@ const AppRoutes = () => {
     <ProtectedRoute>
       <DashboardLayout>
         <WorkerBookings />
+      </DashboardLayout>
+    </ProtectedRoute>
+  }
+/>
+        <Route
+  path="/worker/earnings"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout>
+        <WorkerEarnings />
       </DashboardLayout>
     </ProtectedRoute>
   }
