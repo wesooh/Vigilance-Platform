@@ -23,7 +23,7 @@ import EditProfile from "../pages/worker/EditProfile";
 
 import WorkerBookings from "../pages/worker/WorkerBookings";
 
-
+import WorkerEarnings from "../pages/worker/WorkerEarnings";
 
 
 const AppRoutes = () => {
