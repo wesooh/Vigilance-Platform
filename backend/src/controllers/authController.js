@@ -53,6 +53,13 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    const isComplete = checkWorkerProfileComplete(user);
+
+if (user.role === "worker") {
+  user.verificationStatus = isComplete ? "pending" : "incomplete";
+  await user.save();
+}
+
     res.json({
       message: "Login successful",
       token,
@@ -203,4 +210,17 @@ export const updateWorkerProfile = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+export const checkWorkerProfileComplete = (user) => {
+  if (user.role !== "worker") return true;
+
+  return (
+    user.idNumber &&
+    user.idFront &&
+    user.idBack &&
+    user.cv &&
+    user.areaOfWork &&
+    user.profileImage
+  );
 };

@@ -88,6 +88,45 @@ price: {
     type: Number,
     default: 0,
   },
+
+  verificationStatus: {
+  type: String,
+  enum: ["incomplete", "pending", "verified"],
+  default: "incomplete",
+},
+
+idNumber: {
+  type: String,
+  default: "",
+},
+
+idFront: {
+  type: String,
+  default: "",
+},
+
+idBack: {
+  type: String,
+  default: "",
+},
+
+cv: {
+  type: String,
+  default: "",
+},
+
+certifications: {
+  type: [String],
+  default: [],
+},
+
+areaOfWork: {
+  type: String,
+  default: "",
+},
+
+otpCode: String,
+otpExpires: Date,
 },
 
 testimonials: [

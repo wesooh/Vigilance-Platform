@@ -40,6 +40,11 @@ const WorkerBookings = () => {
 
   // 🔥 STATUS UPDATE
  const updateStatus = async (id, status) => {
+  if (user.verificationStatus !== "verified") {
+    alert("Complete verification first");
+    return;
+  }
+
   try {
     await axios.put(
       `http://localhost:5000/api/bookings/${id}/status`,
