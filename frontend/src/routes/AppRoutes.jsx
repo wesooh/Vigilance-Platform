@@ -25,6 +25,9 @@ import WorkerBookings from "../pages/worker/WorkerBookings";
 
 import WorkerEarnings from "../pages/worker/WorkerEarnings";
 
+import AdminFinanceDashboard from "../pages/admin/AdminFinanceDashboard";
+
+import Notifications from "../pages/Notifications";
 
 const AppRoutes = () => {
   return (
@@ -155,6 +158,36 @@ const AppRoutes = () => {
     <ProtectedRoute>
       <DashboardLayout>
         <WorkerEarnings />
+      </DashboardLayout>
+    </ProtectedRoute>
+  }
+/>
+        <Route
+  path="/admin/finance"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout>
+        <AdminFinanceDashboard />
+      </DashboardLayout>
+    </ProtectedRoute>
+  }
+/>
+        <Route
+  path="/client/notifications"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout>
+        <Notifications />
+      </DashboardLayout>
+    </ProtectedRoute>
+  }
+/>
+        <Route
+  path="/notifications"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout>
+        <Notifications />
       </DashboardLayout>
     </ProtectedRoute>
   }

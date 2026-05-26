@@ -89,6 +89,10 @@ const Sidebar = () => {
       name: "Payments",
       path: "/admin/payments"
     },
+    {
+      name: "Finance",
+      path: "/admin/finance"
+},
   ];
 
   let links = [];

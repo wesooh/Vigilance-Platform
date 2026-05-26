@@ -12,6 +12,10 @@ import connectDB from "./config/db.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js"; 
+import reviewRoutes from "./routes/reviewRoutes.js"; 
+import adminFinanceRoutes from "./routes/adminFinanceRoutes.js";
 
 connectDB();
 
@@ -21,6 +25,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);  
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/admin/finance", adminFinanceRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {

@@ -19,3 +19,16 @@ body {
   background: var(--light-gray);
   color: var(--primary-dark);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+button {
+  transition: 0.3s;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}

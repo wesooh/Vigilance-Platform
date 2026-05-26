@@ -1,10 +1,19 @@
 import Navbar from "../components/Navbar";
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({
+  children,
+}) => {
   return (
     <div>
       <Navbar />
-      <div style={{ padding: "20px" }}>{children}</div>
+
+      <div
+        style={{
+          paddingTop: "90px",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };
