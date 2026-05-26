@@ -15,16 +15,104 @@ const userSchema = new mongoose.Schema(
 
     location: String,
 
-    // Worker-specific fields
+    // =========================
+    // 🔐 VERIFICATION CORE
+    // =========================
     isVerified: {
       type: Boolean,
       default: false,
     },
 
+    verificationStatus: {
+      type: String,
+      enum: ["incomplete", "pending", "verified"],
+      default: "incomplete",
+    },
+
+    isProfileComplete: {
+      type: Boolean,
+      default: false,
+    },
+
+    // =========================
+    // 🪪 ID VERIFICATION
+    // =========================
+    idNumber: {
+      type: String,
+      default: "",
+    },
+
+    idFrontImage: {
+      type: String, // URL after upload
+      default: "",
+    },
+
+    idBackImage: {
+      type: String,
+      default: "",
+    },
+
+    // =========================
+    // 📄 WORKER DOCUMENTS
+    // =========================
+    cv: {
+      type: String, // file URL
+      default: "",
+    },
+
+    certifications: [
+      {
+        name: String,
+        fileUrl: String,
+      },
+    ],
+
+    portfolio: [
+      {
+        title: String,
+        fileUrl: String,
+      },
+    ],
+
+    profileImage: {
+      type: String,
+      default: "",
+    },
+
+    about: {
+      type: String,
+      default: "",
+    },
+
     skills: [String],
 
-    experience: String,
+    experience: {
+      type: String,
+      default: "",
+    },
 
+    category: {
+      type: String,
+      default: "",
+    },
+
+    availability: {
+      type: Boolean,
+      default: true,
+    },
+
+    // =========================
+    // 💰 PRICING
+    // =========================
+    price: {
+      daily: { type: Number, default: 0 },
+      weekly: { type: Number, default: 0 },
+      monthly: { type: Number, default: 0 },
+    },
+
+    // =========================
+    // ⭐ SOCIAL PROOF
+    // =========================
     rating: {
       type: Number,
       default: 0,
@@ -37,108 +125,25 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    price: {
-      daily: Number,
-      weekly: Number,
-      monthly: Number,
-    },
-    category: {
+    testimonials: [
+      {
+        clientName: String,
+        comment: String,
+      },
+    ],
+
+    // =========================
+    // 🔐 OTP SUPPORT (FOR NEXT STEP)
+    // =========================
+    otpCode: {
       type: String,
-      default: "",
+      default: null,
     },
-    profileImage: {
-  type: String,
-  default: "",
-},
 
-about: {
-  type: String,
-  default: "",
-},
-
-skills: [String],
-
-experience: {
-  type: String,
-  default: "",
-},
-
-rating: {
-  type: Number,
-  default: 0,
-},
-
-availability: {
-  type: Boolean,
-  default: true,
-},
-
-price: {
-  daily: {
-    type: Number,
-    default: 0,
-  },
-
-  weekly: {
-    type: Number,
-    default: 0,
-  },
-
-  monthly: {
-    type: Number,
-    default: 0,
-  },
-
-  verificationStatus: {
-  type: String,
-  enum: ["incomplete", "pending", "verified"],
-  default: "incomplete",
-},
-
-idNumber: {
-  type: String,
-  default: "",
-},
-
-idFront: {
-  type: String,
-  default: "",
-},
-
-idBack: {
-  type: String,
-  default: "",
-},
-
-cv: {
-  type: String,
-  default: "",
-},
-
-certifications: {
-  type: [String],
-  default: [],
-},
-
-areaOfWork: {
-  type: String,
-  default: "",
-},
-
-profileImage: String,
-
-portfolio: String,
-
-otpCode: String,
-otpExpires: Date,
-},
-
-testimonials: [
-  {
-    clientName: String,
-    comment: String,
-  },
-],  
+    otpExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
