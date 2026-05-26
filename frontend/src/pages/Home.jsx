@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div style={styles.container}>
       
@@ -18,15 +22,25 @@ const Home = () => {
           cleaners, and more.
         </p>
 
-        <div style={styles.heroButtons}>
-          <button style={styles.primaryBtn}>
-            Find Workers
-          </button>
+         <div style={styles.heroButtons}>
+  <button
+    style={styles.primaryBtn}
+    onClick={() =>
+      navigate("/login")
+    }
+  >
+    Find Workers
+  </button>
 
-          <button style={styles.secondaryBtn}>
-            Become A Worker
-          </button>
-        </div>
+  <button
+    style={styles.secondaryBtn}
+    onClick={() =>
+      navigate("/register")
+    }
+  >
+    Become A Worker
+  </button>
+</div>
       </section>
 
       {/* ABOUT */}
@@ -50,10 +64,15 @@ const Home = () => {
           {[
             "House Maids",
             "Nannies",
-            "Plumbers",
-            "Electricians",
             "Cooks",
             "Gardeners",
+            "Housekeepers",
+            "Janitors",
+            "Laundry Workers",
+            "Caregivers/Home Nurses",
+            "Casual Domestic Helpers",
+            "Delivery Guys",
+            "Technical Workers (Carpenters, Mechanics, Plumbers, Electricians, etc.)",
           ].map((item, index) => (
             <div
               key={index}
