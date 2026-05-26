@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const auth = useAuth();
@@ -68,8 +69,12 @@ const Navbar = () => {
         onClick={refreshPage}
       >
         <div style={styles.logo}>
-          LOGO
-        </div>
+  <img
+    src={logo}
+    alt="Vigilance Logo"
+    style={styles.logoImg}
+  />
+</div>
 
         <h2 style={styles.title}>
           Vigilance
@@ -164,6 +169,13 @@ const styles = {
     fontSize: "12px",
     fontWeight: "bold",
   },
+
+  logoImg: {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  borderRadius: "50%",
+},
 
   title: {
     fontSize: "24px",

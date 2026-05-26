@@ -4,18 +4,16 @@ const AuthNavbar = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={styles.nav}>
-      <h2 style={styles.logo} onClick={() => navigate("/")}>
-        Vigilance
-      </h2>
+    <nav style={styles.nav}>
+      <div style={styles.left} onClick={() => navigate("/")}>
+        <div style={styles.logoCircle}>V</div>
+        <h2 style={styles.title}>Vigilance</h2>
+      </div>
 
-      <button
-        style={styles.homeBtn}
-        onClick={() => navigate("/")}
-      >
+      <button style={styles.homeBtn} onClick={() => navigate("/")}>
         Back to Home
       </button>
-    </div>
+    </nav>
   );
 };
 
@@ -33,10 +31,29 @@ const styles = {
     padding: "0 20px",
     color: "white",
     zIndex: 1000,
+    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
   },
 
-  logo: {
+  left: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
     cursor: "pointer",
+  },
+
+  logoCircle: {
+    width: "35px",
+    height: "35px",
+    borderRadius: "50%",
+    background: "#268426",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+  },
+
+  title: {
+    fontSize: "20px",
   },
 
   homeBtn: {
