@@ -1,12 +1,14 @@
 import express from "express";
 import {
-  startVerification,
+  checkProfileCompletion,
+  sendOTP,
   verifyOTP,
 } from "../controllers/verificationController.js";
 
 const router = express.Router();
 
-router.post("/start", startVerification);
-router.post("/verify", verifyOTP);
+router.get("/check/:id", checkProfileCompletion);
+router.post("/otp/send/:id", sendOTP);
+router.post("/otp/verify/:id", verifyOTP);
 
 export default router;

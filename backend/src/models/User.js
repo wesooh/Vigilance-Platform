@@ -89,6 +89,11 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     verificationStatus: {
       type: String,
       enum: ["incomplete", "pending", "verified"],

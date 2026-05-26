@@ -9,6 +9,9 @@ import { io } from "socket.io-client";
 
 import { useAuth } from "../../context/AuthContext";
 
+if (!user?.isVerified) {
+  return <p>You must verify your account to use chat.</p>;
+}
 
 const socket = io(
   "http://localhost:5000"

@@ -42,40 +42,83 @@ export const startVerification = async (req, res) => {
   }
 };
 
-// 2. VERIFY OTP
-export const verifyOTP = async (req, res) => {
+// 🔥 CHECK PROFILE COMPLETION
+export const checkProfileCompletion = async (req, res) => {
   try {
-    const { userId, otp } = req.body;
+    const user = await User.findById(req.params.id);
 
-    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const requiredFields = [
+      "idNumber",
+      "idFront",
+      "idBack",
+      "cv",
+      "certifications",
+    ];
 
-    if (!user.verification?.otp) {
-      return res.status(400).json({ message: "No OTP found" });
-    }
+    const isComplete = requiredFields.every((field) => {
+      if (Array.isArray(user[field])) {
+        return user[field].length > 0;
+      }
+      return !!user[field];
+    });
 
-    if (user.verification.otp !== otp) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
+    user.isProfileComplete = isComplete;
+    await user.save();
 
-    if (Date.now() > user.verification.otpExpires) {
-      return res.status(400).json({ message: "OTP expired" });
-    }
+    res.json({ isProfileComplete: isComplete });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-    user.verification.isVerified = true;
-    user.verification.otp = null;
-    user.verification.otpExpires = null;
+// 🔥 GENERATE OTP (console only)
+export const sendOTP = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.verificationOTP = otp;
+    user.verificationExpires = Date.now() + 5 * 60 * 1000;
 
     await user.save();
 
-    res.json({
-      message: "Worker verified successfully",
-      user,
-    });
+    console.log("🔥 OTP FOR VERIFICATION:", otp);
 
+    res.json({ message: "OTP sent (check server console)" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// 🔥 VERIFY OTP
+export const verifyOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.verificationOTP !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    if (user.verificationExpires < Date.now()) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    user.isVerified = true;
+    user.verificationOTP = null;
+    user.verificationExpires = null;
+
+    await user.save();
+
+    res.json({ message: "Verified successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
