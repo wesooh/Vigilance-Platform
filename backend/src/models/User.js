@@ -84,6 +84,17 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    isProfileComplete: {
+      type: Boolean,
+      default: false,
+    },
+
+    verificationStatus: {
+      type: String,
+      enum: ["incomplete", "pending", "verified"],
+      default: "incomplete",
+    },
+
     skills: [String],
 
     experience: {

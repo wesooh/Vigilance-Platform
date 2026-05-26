@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+//import { checkWorkerProfileComplete } from "../utils/checkWorkerProfile.js";
 
 // REGISTER
 export const register = async (req, res) => {
@@ -60,11 +61,18 @@ if (user.role === "worker") {
   await user.save();
 }
 
-    res.json({
-      message: "Login successful",
-      token,
-      user,
-    });
+    // 🔥 RUN PROFILE CHECK FOR WORKERS
+let updatedUser = user;
+
+if (user.role === "worker") {
+  updatedUser = await checkWorkerProfile(user._id);
+}
+
+res.json({
+  message: "Login successful",
+  token,
+  user: updatedUser,
+});
   } catch (error) {
   console.log("🔥 FULL LOGIN ERROR:", error);
   console.log("🔥 STACK:", error.stack);
