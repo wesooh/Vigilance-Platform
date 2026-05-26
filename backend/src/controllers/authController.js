@@ -65,7 +65,7 @@ if (user.role === "worker") {
 let updatedUser = user;
 
 if (user.role === "worker") {
-  updatedUser = await checkWorkerProfile(user._id);
+  updatedUser = await User.findById(user._id);
 }
 
 res.json({

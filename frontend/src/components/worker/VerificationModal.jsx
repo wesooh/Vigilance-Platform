@@ -1,83 +1,84 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const VerificationModal = ({ user, onClose, onSubmit }) => {
+const VerificationModal = ({ user, onClose }) => {
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+
   const [form, setForm] = useState({
     idNumber: "",
-    idFrontImage: null,
-    idBackImage: null,
-    cv: null,
-    certifications: [],
-    portfolio: [],
-    profileImage: null,
+    areaOfWork: "",
+    cv: "",
   });
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+  useEffect(() => {
+    if (user?._id) {
+      sendOTP();
+    }
+  }, [user]);
+
+  const sendOTP = async () => {
+    await axios.post(
+      `http://localhost:5000/api/verification/request/${user._id}`
+    );
+    setOtpSent(true);
   };
 
-  const handleFileChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.files[0],
-    });
-  };
+  const handleSubmit = async () => {
+    await axios.post(
+      `http://localhost:5000/api/verification/verify/${user._id}`,
+      {
+        otp,
+        data: form,
+      }
+    );
 
-  const handleSubmit = () => {
-    const data = new FormData();
-
-    data.append("idNumber", form.idNumber);
-    data.append("idFrontImage", form.idFrontImage);
-    data.append("idBackImage", form.idBackImage);
-    data.append("cv", form.cv);
-    data.append("profileImage", form.profileImage);
-
-    // optional arrays
-    data.append("certifications", JSON.stringify(form.certifications));
-    data.append("portfolio", JSON.stringify(form.portfolio));
-
-    onSubmit(data);
+    alert("Verified!");
+    onClose();
   };
 
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Complete Your Worker Profile</h2>
+        <h2>Complete Your Profile</h2>
 
-        <p style={{ fontSize: "14px", opacity: 0.7 }}>
-          You can skip this, but you won’t be able to apply for jobs or chat until it's completed.
-        </p>
+        <p>You can skip, but you won't access full features.</p>
 
         <input
-          name="idNumber"
           placeholder="ID Number"
-          onChange={handleChange}
-          style={styles.input}
+          onChange={(e) =>
+            setForm({ ...form, idNumber: e.target.value })
+          }
         />
 
-        <label>ID Front</label>
-        <input type="file" name="idFrontImage" onChange={handleFileChange} />
+        <input
+          placeholder="Area of Work"
+          onChange={(e) =>
+            setForm({ ...form, areaOfWork: e.target.value })
+          }
+        />
 
-        <label>ID Back</label>
-        <input type="file" name="idBackImage" onChange={handleFileChange} />
+        <input
+          placeholder="CV Link"
+          onChange={(e) =>
+            setForm({ ...form, cv: e.target.value })
+          }
+        />
 
-        <label>Profile Picture</label>
-        <input type="file" name="profileImage" onChange={handleFileChange} />
+        {otpSent && (
+          <input
+            placeholder="Enter OTP (check terminal)"
+            onChange={(e) => setOtp(e.target.value)}
+          />
+        )}
 
-        <label>CV</label>
-        <input type="file" name="cv" onChange={handleFileChange} />
+        <button onClick={handleSubmit}>
+          Submit Verification
+        </button>
 
-        <div style={styles.buttons}>
-          <button onClick={handleSubmit} style={styles.primary}>
-            Submit Verification
-          </button>
-
-          <button onClick={onClose} style={styles.secondary}>
-            Skip for now
-          </button>
-        </div>
+        <button onClick={onClose}>
+          Skip for now
+        </button>
       </div>
     </div>
   );
@@ -98,43 +99,13 @@ const styles = {
   },
 
   modal: {
-    width: "420px",
     background: "white",
     padding: "20px",
     borderRadius: "10px",
+    width: "400px",
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-  },
-
-  input: {
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-  },
-
-  buttons: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "10px",
-  },
-
-  primary: {
-    background: "#268426",
-    color: "white",
-    border: "none",
-    padding: "10px",
-    cursor: "pointer",
-    borderRadius: "5px",
-  },
-
-  secondary: {
-    background: "#16437E",
-    color: "white",
-    border: "none",
-    padding: "10px",
-    cursor: "pointer",
-    borderRadius: "5px",
   },
 };
 

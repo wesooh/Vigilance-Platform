@@ -89,15 +89,9 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-
-    verificationStatus: {
+    areaOfWork: { 
       type: String,
-      enum: ["incomplete", "pending", "verified"],
-      default: "incomplete",
+      default: "",
     },
 
     skills: [String],
@@ -154,6 +148,11 @@ const userSchema = new mongoose.Schema(
     otpCode: {
       type: String,
       default: null,
+    },
+
+    otpVerified: {
+      type: Boolean,
+      default: false,
     },
 
     otpExpiresAt: {

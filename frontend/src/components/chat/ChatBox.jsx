@@ -1,127 +1,82 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState } from "react";
 import axios from "axios";
-
 import { io } from "socket.io-client";
-
 import { useAuth } from "../../context/AuthContext";
 
-if (!user?.isVerified) {
-  return <p>You must verify your account to use chat.</p>;
-}
+const socket = io("http://localhost:5000");
 
-const socket = io(
-  "http://localhost:5000"
-);
-
-const ChatBox = ({
-  bookingId,
-  receiverId,
-}) => {
+const ChatBox = ({ bookingId, receiverId }) => {
   const { user } = useAuth();
-
-  const [messages, setMessages] =
-    useState([]);
-
-  const [text, setText] =
-    useState("");
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
 
   // 🔥 FETCH OLD MESSAGES
   useEffect(() => {
     if (bookingId) {
-      socket.emit(
-        "join-room",
-        bookingId
-      );}
+      socket.emit("join-room", bookingId);
+    }
     fetchMessages();
   }, [bookingId]);
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/chat/${bookingId}`
-      );
-
+      const res = await axios.get(`http://localhost:5000/api/chat/${bookingId}`);
       setMessages(res.data);
-
     } catch (err) {
       console.log(err);
     }
   };
 
-  // 🔥 SOCKET LISTENER
+  // 🔥 SOCKET LISTENER (Fixed duplicate, broken block brackets here)
   useEffect(() => {
-    socket.on(
-      "receive-message",
-      (message) => {
-        setMessages((prev) => {
-  const exists = prev.find(
-    (m) => m._id === message._id
-  );
-
-  if (exists) return prev;
-
-  return [...prev, message];
-}); {
-          setMessages((prev) => {
-  const exists = prev.some(
-    (m) => m._id === message._id
-  );
-
-  if (exists) return prev;
-
-  return [...prev, message];
-}); 
-        }
-      }
-    );
+    socket.on("receive-message", (message) => {
+      setMessages((prev) => {
+        const exists = prev.find((m) => m._id === message._id);
+        if (exists) return prev;
+        return [...prev, message];
+      });
+    });
 
     return () => {
-      socket.off(
-        "receive-message"
-      );
+      socket.off("receive-message");
     };
   }, [bookingId]);
 
   // 🔥 SEND MESSAGE
-  const sendMessage =
-    async () => {
-      console.log("SEND BUTTON CLICKED");
+  const sendMessage = async () => {
+    console.log("SEND BUTTON CLICKED");
 
-      if (!text.trim()) return;
+    if (!text.trim()) return;
 
-      const messageData = {
-        sender: user._id,
-        receiver: receiverId,
-        booking: bookingId,
-        text,
-      };
-
-      console.log("MESSAGE DATA:", messageData);
-     
-      try {
-        const res =
-          await axios.post(
-            "http://localhost:5000/api/chat",
-            messageData
-          );
-          
-        console.log("MESSAGE SAVED:", res.data);
-
-        socket.emit(
-          "send-message",
-          res.data
-        );
-
-        setText("");
-
-      } catch (err) {
-        console.log(err);
-      }
+    const messageData = {
+      sender: user?._id, // Added optional chaining to prevent undefined crashes
+      receiver: receiverId,
+      booking: bookingId,
+      text,
     };
+
+    console.log("MESSAGE DATA:", messageData);
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/chat", messageData);
+      console.log("MESSAGE SAVED:", res.data);
+      socket.emit("send-message", res.data);
+      setText("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // 🔥 STEP 4 GUARD: Placed inside the component where it belongs!
+  if (!user?.isVerified) {
+    return (
+      <div style={styles.container}>
+        <p style={{ color: "red", fontWeight: "bold" }}>
+          You must verify your account to use chat.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -133,23 +88,9 @@ const ChatBox = ({
             key={msg._id}
             style={{
               ...styles.message,
-              alignSelf:
-                msg.sender ===
-                user._id
-                  ? "flex-end"
-                  : "flex-start",
-
-              background:
-                msg.sender ===
-                user._id
-                  ? "#268426"
-                  : "#D2D7DF",
-
-              color:
-                msg.sender ===
-                user._id
-                  ? "#fff"
-                  : "#000",
+              alignSelf: msg.sender === user?._id ? "flex-end" : "flex-start",
+              background: msg.sender === user?._id ? "#268426" : "#D2D7DF",
+              color: msg.sender === user?._id ? "#fff" : "#000",
             }}
           >
             {msg.text}
@@ -160,19 +101,11 @@ const ChatBox = ({
       <div style={styles.inputArea}>
         <input
           value={text}
-          onChange={(e) =>
-            setText(
-              e.target.value
-            )
-          }
+          onChange={(e) => setText(e.target.value)}
           placeholder="Type message..."
           style={styles.input}
         />
-
-        <button
-          onClick={sendMessage}
-          style={styles.button}
-        >
+        <button onClick={sendMessage} style={styles.button}>
           Send
         </button>
       </div>
@@ -187,7 +120,6 @@ const styles = {
     borderRadius: "10px",
     marginTop: "20px",
   },
-
   messages: {
     height: "300px",
     overflowY: "auto",
@@ -196,23 +128,19 @@ const styles = {
     gap: "10px",
     marginBottom: "20px",
   },
-
   message: {
     padding: "10px",
     borderRadius: "10px",
     maxWidth: "70%",
   },
-
   inputArea: {
     display: "flex",
     gap: "10px",
   },
-
   input: {
     flex: 1,
     padding: "10px",
   },
-
   button: {
     background: "#0B2C59",
     color: "#fff",
