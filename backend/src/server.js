@@ -16,6 +16,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js"; 
 import reviewRoutes from "./routes/reviewRoutes.js"; 
 import adminFinanceRoutes from "./routes/adminFinanceRoutes.js";
+import verificationRoutes from "./routes/verificationRoutes.js";  
 
 connectDB();
 
@@ -29,6 +30,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);  
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin/finance", adminFinanceRoutes);
+app.use("/api/verification", verificationRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {

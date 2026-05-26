@@ -125,6 +125,10 @@ areaOfWork: {
   default: "",
 },
 
+profileImage: String,
+
+portfolio: String,
+
 otpCode: String,
 otpExpires: Date,
 },
