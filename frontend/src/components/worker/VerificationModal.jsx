@@ -1,48 +1,56 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
-const VerificationModal = ({ user, onClose }) => {
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState("");
-
+const WorkerVerificationModal = ({ user, onClose }) => {
   const [form, setForm] = useState({
     idNumber: "",
     areaOfWork: "",
-    cv: "",
+    otp: "",
   });
 
-  useEffect(() => {
-    if (user?._id) {
-      sendOTP();
-    }
-  }, [user]);
-
-  const sendOTP = async () => {
-    await axios.post(
-      `http://localhost:5000/api/verification/request/${user._id}`
-    );
-    setOtpSent(true);
-  };
+  const [files, setFiles] = useState({});
 
   const handleSubmit = async () => {
-    await axios.post(
-      `http://localhost:5000/api/verification/verify/${user._id}`,
-      {
-        otp,
-        data: form,
-      }
-    );
+    try {
+      const data = new FormData();
 
-    alert("Verified!");
-    onClose();
+      data.append("idNumber", form.idNumber);
+      data.append("areaOfWork", form.areaOfWork);
+
+      Object.keys(files).forEach((key) => {
+        data.append(key, files[key]);
+      });
+
+      // STEP 1: SEND OTP (terminal)
+      await axios.post(
+        `http://localhost:5000/api/verification/otp/send/${user._id}`
+      );
+
+      alert("OTP sent (check terminal)");
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      await axios.post(
+        `http://localhost:5000/api/verification/otp/verify/${user._id}`,
+        { otp: form.otp }
+      );
+
+      alert("Verified successfully");
+      onClose();
+    } catch (err) {
+      alert("OTP failed");
+    }
   };
 
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Complete Your Profile</h2>
-
-        <p>You can skip, but you won't access full features.</p>
+        <h2>Worker Verification</h2>
 
         <input
           placeholder="ID Number"
@@ -58,26 +66,25 @@ const VerificationModal = ({ user, onClose }) => {
           }
         />
 
+        <button onClick={handleSubmit}>
+          Submit & Send OTP
+        </button>
+
+        <hr />
+
         <input
-          placeholder="CV Link"
+          placeholder="Enter OTP"
           onChange={(e) =>
-            setForm({ ...form, cv: e.target.value })
+            setForm({ ...form, otp: e.target.value })
           }
         />
 
-        {otpSent && (
-          <input
-            placeholder="Enter OTP (check terminal)"
-            onChange={(e) => setOtp(e.target.value)}
-          />
-        )}
-
-        <button onClick={handleSubmit}>
-          Submit Verification
+        <button onClick={verifyOtp}>
+          Verify OTP
         </button>
 
         <button onClick={onClose}>
-          Skip for now
+          Close
         </button>
       </div>
     </div>
@@ -95,18 +102,12 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 9999,
   },
-
   modal: {
     background: "white",
     padding: "20px",
-    borderRadius: "10px",
     width: "400px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
   },
 };
 
-export default VerificationModal;
+export default WorkerVerificationModal;

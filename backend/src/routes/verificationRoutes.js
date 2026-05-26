@@ -1,8 +1,5 @@
 import express from "express";
 import {
-    requestVerification,
-    verifyWorkerProfile,
-    checkVerification,
   checkProfileCompletion,
   sendOTP,
   verifyOTP,

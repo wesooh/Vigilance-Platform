@@ -15,10 +15,15 @@ const userSchema = new mongoose.Schema(
 
     location: String,
 
-    // =========================
-    // 🔐 VERIFICATION CORE
-    // =========================
+    // ======================
+    // VERIFICATION CORE
+    // ======================
     isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    isProfileComplete: {
       type: Boolean,
       default: false,
     },
@@ -29,36 +34,17 @@ const userSchema = new mongoose.Schema(
       default: "incomplete",
     },
 
-    isProfileComplete: {
-      type: Boolean,
-      default: false,
-    },
+    // ======================
+    // ID INFO
+    // ======================
+    idNumber: String,
+    idFrontImage: String,
+    idBackImage: String,
 
-    // =========================
-    // 🪪 ID VERIFICATION
-    // =========================
-    idNumber: {
-      type: String,
-      default: "",
-    },
-
-    idFrontImage: {
-      type: String, // URL after upload
-      default: "",
-    },
-
-    idBackImage: {
-      type: String,
-      default: "",
-    },
-
-    // =========================
-    // 📄 WORKER DOCUMENTS
-    // =========================
-    cv: {
-      type: String, // file URL
-      default: "",
-    },
+    // ======================
+    // WORKER DOCS
+    // ======================
+    cv: String,
 
     certifications: [
       {
@@ -74,90 +60,25 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    profileImage: {
-      type: String,
-      default: "",
-    },
-
-    about: {
-      type: String,
-      default: "",
-    },
-
-    isProfileComplete: {
-      type: Boolean,
-      default: false,
-    },
-
-    areaOfWork: { 
-      type: String,
-      default: "",
-    },
-
+    profileImage: String,
+    areaOfWork: String,
     skills: [String],
-
-    experience: {
-      type: String,
-      default: "",
-    },
-
-    category: {
-      type: String,
-      default: "",
-    },
+    experience: String,
+    category: String,
 
     availability: {
       type: Boolean,
       default: true,
     },
 
-    // =========================
-    // 💰 PRICING
-    // =========================
-    price: {
-      daily: { type: Number, default: 0 },
-      weekly: { type: Number, default: 0 },
-      monthly: { type: Number, default: 0 },
-    },
-
-    // =========================
-    // ⭐ SOCIAL PROOF
-    // =========================
-    rating: {
-      type: Number,
-      default: 0,
-    },
-
-    reviews: [
-      {
-        user: String,
-        comment: String,
-      },
-    ],
-
-    testimonials: [
-      {
-        clientName: String,
-        comment: String,
-      },
-    ],
-
-    // =========================
-    // 🔐 OTP SUPPORT (FOR NEXT STEP)
-    // =========================
-    otpCode: {
-      type: String,
-      default: null,
-    },
-
+    // ======================
+    // OTP SYSTEM (CLEAN)
+    // ======================
+    otpCode: String,
+    otpExpiresAt: Date,
     otpVerified: {
       type: Boolean,
       default: false,
-    },
-
-    otpExpiresAt: {
-      type: Date,
-      default: null,
     },
   },
   { timestamps: true }

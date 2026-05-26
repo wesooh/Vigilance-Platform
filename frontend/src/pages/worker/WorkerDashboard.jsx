@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import VerificationModal from "../../components/worker/WorkerVerificationModal";
+import WorkerVerificationModal from "../../components/worker/VerificationModal";
 
 const WorkerDashboard = () => {
   const { user } = useAuth();
@@ -14,12 +14,16 @@ const WorkerDashboard = () => {
   }, [user]);
 
   const checkStatus = async () => {
-    const res = await axios.get(
-      `http://localhost:5000/api/verification/status/${user._id}`
-    );
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/verification/check/${user._id}`
+      );
 
-    if (!res.data.isComplete) {
-      setShowModal(true);
+      if (!res.data.isComplete) {
+        setShowModal(true);
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -28,7 +32,7 @@ const WorkerDashboard = () => {
       <h1>Worker Dashboard</h1>
 
       {showModal && (
-        <VerificationModal
+        <WorkerVerificationModal
           user={user}
           onClose={() => setShowModal(false)}
         />
