@@ -153,16 +153,6 @@ const AppRoutes = () => {
   }
 />
         <Route
-  path="/worker/earnings"
-  element={
-    <ProtectedRoute>
-      <DashboardLayout>
-        <WorkerEarnings />
-      </DashboardLayout>
-    </ProtectedRoute>
-  }
-/>
-        <Route
   path="/admin/finance"
   element={
     <ProtectedRoute>
