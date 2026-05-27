@@ -7,12 +7,12 @@ const Sidebar = () => {
   const location = useLocation();
 
   const workerLinks = [
-    { name: "Dashboard", path: "/worker/dashboard" },
-    { name: "My Jobs", path: "/worker/bookings" },
-    { name: "Earnings", path: "/worker/earnings" },
-    { name: "Edit Profile", path: "/worker/edit-profile" },
-    { name: "Settings", path: "/worker/settings" },
-  ];
+  { name: "Dashboard", path: "/worker/dashboard" },
+  { name: "Complete Verification", path: "/worker/dashboard" },
+  { name: "My Jobs", path: "/worker/bookings" },
+  { name: "Earnings", path: "/worker/earnings" },
+  { name: "Edit Profile", path: "/worker/edit-profile" },
+];
 
   return (
     <div style={styles.sidebar}>

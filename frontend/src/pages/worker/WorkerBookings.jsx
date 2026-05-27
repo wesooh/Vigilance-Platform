@@ -8,126 +8,238 @@ const socket = io("http://localhost:5000");
 
 const WorkerBookings = () => {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState([]);
 
-  // 🔥 FETCH BOOKINGS
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // =========================
+  // FETCH BOOKINGS
+  // =========================
   const fetchBookings = async () => {
+    if (!user?._id) return;
+
     try {
+      setLoading(true);
+
       const res = await axios.get(
         `http://localhost:5000/api/bookings/worker/${user._id}`
       );
 
       setBookings(res.data);
     } catch (err) {
-      console.log(err);
+      console.log("FETCH BOOKINGS ERROR:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔥 INITIAL LOAD
+  // =========================
+  // INIT + SOCKET
+  // =========================
   useEffect(() => {
     if (!user?._id) return;
 
     fetchBookings();
 
-    socket.on("new-booking", (booking) => {
-      if (booking.worker?._id === user._id || booking.worker === user._id) {
+    socket.emit("join-worker-room", user._id);
+
+    const handleNewBooking = (booking) => {
+      if (
+        booking.worker?._id === user._id ||
+        booking.worker === user._id
+      ) {
         setBookings((prev) => [booking, ...prev]);
       }
-    });
+    };
 
-    return () => socket.off("new-booking");
+    socket.on("new-booking", handleNewBooking);
+
+    return () => {
+      socket.off("new-booking", handleNewBooking);
+    };
   }, [user]);
 
-  // 🔥 STATUS UPDATE
- const updateStatus = async (id, status) => {
-  if (user.verificationStatus !== "verified") {
-    alert("Complete verification first");
-    return;
-  }
+  // =========================
+  // UPDATE STATUS
+  // =========================
+  const updateStatus = async (id, status) => {
+    if (!user) return;
 
-  try {
-    await axios.put(
-      `http://localhost:5000/api/bookings/${id}/status`,
-      { status }
-    );
+    // 🔥 FIXED VERIFICATION CHECK (IMPORTANT)
+    if (user.verificationStatus !== "verified") {
+      alert("Complete verification first");
+      return;
+    }
 
-    fetchBookings();
-  } catch (err) {
-    console.log(err.response?.data || err.message);
-  }
-};
+    try {
+      await axios.put(
+        `http://localhost:5000/api/bookings/${id}/status`,
+        { status }
+      );
 
+      // refresh after update
+      fetchBookings();
+    } catch (err) {
+      console.log("UPDATE STATUS ERROR:", err.response?.data || err.message);
+    }
+  };
+
+  // =========================
+  // LOADING STATE
+  // =========================
   if (!user) {
     return <h3>Loading user...</h3>;
   }
 
   return (
-    <div>
+    <div style={styles.container}>
       <h1>Booking Requests</h1>
 
-      {bookings.length === 0 ? (
+      {loading && <p>Loading bookings...</p>}
+
+      {!loading && bookings.length === 0 && (
         <p>No bookings yet</p>
-      ) : (
+      )}
+
+      {!loading &&
         bookings.map((booking) => (
           <div key={booking._id} style={styles.card}>
-            
+            {/* CLIENT INFO */}
             <h3>
               {booking.client?.firstName || "Client"}{" "}
               {booking.client?.lastName || ""}
             </h3>
 
-            <p>{booking.serviceType}</p>
-            <p>{booking.message}</p>
-
             <p>
-              Status: <b>{booking.status}</b>
+              <b>Service:</b> {booking.serviceType}
             </p>
 
-            {/* 🔥 LIFECYCLE BUTTONS */}
+            <p>
+              <b>Message:</b> {booking.message || "No message"}
+            </p>
+
+            <p>
+              <b>Status:</b>{" "}
+              <span style={styles.status}>
+                {booking.status}
+              </span>
+            </p>
+
+            {/* =========================
+                STATUS FLOW BUTTONS
+            ========================= */}
+
             {booking.status === "requested" && (
-              <>
-                <button onClick={() => updateStatus(booking._id, "accepted")}>
+              <div style={styles.buttonRow}>
+                <button
+                  style={styles.accept}
+                  onClick={() =>
+                    updateStatus(booking._id, "accepted")
+                  }
+                >
                   Accept
                 </button>
 
-                <button onClick={() => updateStatus(booking._id, "rejected")}>
+                <button
+                  style={styles.reject}
+                  onClick={() =>
+                    updateStatus(booking._id, "rejected")
+                  }
+                >
                   Reject
                 </button>
-              </>
+              </div>
             )}
 
             {booking.status === "accepted" && (
-              <button onClick={() => updateStatus(booking._id, "in-progress")}>
+              <button
+                style={styles.primary}
+                onClick={() =>
+                  updateStatus(booking._id, "in-progress")
+                }
+              >
                 Start Job
               </button>
             )}
 
             {booking.status === "in-progress" && (
-              <button onClick={() => updateStatus(booking._id, "completed")}>
-                Complete Job
+              <button
+                style={styles.primary}
+                onClick={() =>
+                  updateStatus(booking._id, "completed")
+                }
+              >
+                Mark as Completed
               </button>
             )}
 
-            {/* 🔥 CHAT */}
-            {booking.client && (
-              <ChatBox
-                bookingId={booking._id}
-                receiverId={booking.client._id}
-              />
+            {/* =========================
+                CHAT (ONLY WHEN CLIENT EXISTS)
+            ========================= */}
+            {booking.client?._id && (
+              <div style={{ marginTop: "15px" }}>
+                <ChatBox
+                  bookingId={booking._id}
+                  receiverId={booking.client._id}
+                />
+              </div>
             )}
           </div>
-        ))
-      )}
+        ))}
     </div>
   );
 };
 
+// =========================
+// STYLES (CLEANED + CONSISTENT)
+// =========================
 const styles = {
+  container: {
+    padding: "20px",
+  },
+
   card: {
     border: "1px solid #ddd",
     padding: "20px",
     marginBottom: "15px",
     borderRadius: "10px",
+    background: "#fff",
+  },
+
+  status: {
+    fontWeight: "bold",
+    color: "#16437E",
+  },
+
+  buttonRow: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "10px",
+  },
+
+  accept: {
+    background: "#268426",
+    color: "#fff",
+    border: "none",
+    padding: "10px",
+    cursor: "pointer",
+  },
+
+  reject: {
+    background: "#c0392b",
+    color: "#fff",
+    border: "none",
+    padding: "10px",
+    cursor: "pointer",
+  },
+
+  primary: {
+    background: "#0B2C59",
+    color: "#fff",
+    border: "none",
+    padding: "10px",
+    cursor: "pointer",
+    marginTop: "10px",
   },
 };
 

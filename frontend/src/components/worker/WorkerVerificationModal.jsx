@@ -7,44 +7,24 @@ const WorkerVerificationModal = ({ user, onClose }) => {
     areaOfWork: "",
   });
 
-  const [files, setFiles] = useState({
-    idFront: null,
-    idBack: null,
-    cv: null,
-    certifications: null,
-    profileImage: null,
-    portfolio: null,
-  });
-
+  const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setFiles({
-      ...files,
-      [e.target.name]: e.target.files[0],
-    });
+  const handleFile = (e) => {
+    setFiles({ ...files, [e.target.name]: e.target.files[0] });
   };
 
-  const handleSubmit = async () => {
+  const submitVerification = async () => {
     if (!form.idNumber || !form.areaOfWork) {
       return alert("Fill all required fields");
     }
 
-    if (
-      !files.idFront ||
-      !files.idBack ||
-      !files.cv ||
-      !files.certifications ||
-      !files.profileImage
-    ) {
-      return alert("Upload all required documents");
+    if (!files.idFront || !files.idBack || !files.cv || !files.profileImage) {
+      return alert("Missing required documents");
     }
 
     try {
@@ -52,37 +32,24 @@ const WorkerVerificationModal = ({ user, onClose }) => {
 
       const data = new FormData();
 
-      // TEXT FIELDS
       data.append("idNumber", form.idNumber);
       data.append("areaOfWork", form.areaOfWork);
 
-      // FILES
-      data.append("idFront", files.idFront);
-      data.append("idBack", files.idBack);
-      data.append("cv", files.cv);
-      data.append("certifications", files.certifications);
-      data.append("profileImage", files.profileImage);
+      Object.keys(files).forEach((key) => {
+        data.append(key, files[key]);
+      });
 
-      // OPTIONAL
-      if (files.portfolio) {
-        data.append("portfolio", files.portfolio);
-      }
-
-      const res = await axios.post(
+      await axios.post(
         `http://localhost:5000/api/auth/worker/verify/${user._id}`,
         data,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
-      alert("Verification submitted. OTP sent!");
-
-      console.log(res.data);
-
+      alert("Verification submitted. OTP sent in backend.");
       onClose();
+
     } catch (err) {
       console.log(err);
       alert("Verification failed");
@@ -94,76 +61,31 @@ const WorkerVerificationModal = ({ user, onClose }) => {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Complete Your Verification</h2>
+        <h2>Worker Verification</h2>
 
-        <p>Required fields marked *</p>
-
-        {/* TEXT INPUTS */}
         <input
           name="idNumber"
-          placeholder="ID Number *"
+          placeholder="ID Number"
           onChange={handleChange}
-          style={styles.input}
         />
 
         <input
           name="areaOfWork"
-          placeholder="Area of Work *"
+          placeholder="Area of Work"
           onChange={handleChange}
-          style={styles.input}
         />
 
-        {/* FILE INPUTS */}
-        <label>ID Front *</label>
-        <input
-          type="file"
-          name="idFront"
-          onChange={handleFileChange}
-        />
+        <input type="file" name="idFront" onChange={handleFile} />
+        <input type="file" name="idBack" onChange={handleFile} />
+        <input type="file" name="cv" onChange={handleFile} />
+        <input type="file" name="profileImage" onChange={handleFile} />
+        <input type="file" name="certifications" onChange={handleFile} />
 
-        <label>ID Back *</label>
-        <input
-          type="file"
-          name="idBack"
-          onChange={handleFileChange}
-        />
-
-        <label>CV *</label>
-        <input
-          type="file"
-          name="cv"
-          onChange={handleFileChange}
-        />
-
-        <label>Certifications *</label>
-        <input
-          type="file"
-          name="certifications"
-          onChange={handleFileChange}
-        />
-
-        <label>Profile Picture *</label>
-        <input
-          type="file"
-          name="profileImage"
-          onChange={handleFileChange}
-        />
-
-        <label>Portfolio (optional)</label>
-        <input
-          type="file"
-          name="portfolio"
-          onChange={handleFileChange}
-        />
-
-        {/* BUTTONS */}
-        <button onClick={handleSubmit} disabled={loading} style={styles.submit}>
-          {loading ? "Submitting..." : "Submit & Send OTP"}
+        <button onClick={submitVerification} disabled={loading}>
+          {loading ? "Submitting..." : "Submit Verification"}
         </button>
 
-        <button onClick={onClose} style={styles.cancel}>
-          Cancel
-        </button>
+        <button onClick={onClose}>Close</button>
       </div>
     </div>
   );
@@ -180,41 +102,15 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 9999,
   },
-
   modal: {
     background: "#fff",
-    padding: "25px",
-    borderRadius: "10px",
+    padding: "20px",
     width: "400px",
-    maxHeight: "90vh",
-    overflowY: "auto",
-  },
-
-  input: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "10px",
-  },
-
-  submit: {
-    width: "100%",
-    padding: "12px",
-    background: "#268426",
-    color: "#fff",
-    border: "none",
-    marginTop: "10px",
-    cursor: "pointer",
-  },
-
-  cancel: {
-    width: "100%",
-    padding: "12px",
-    background: "#ccc",
-    border: "none",
-    marginTop: "10px",
-    cursor: "pointer",
+    borderRadius: "10px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
 };
 
